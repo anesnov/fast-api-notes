@@ -1,5 +1,5 @@
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from database import get_db
 from notes.models import NoteDB
@@ -112,12 +112,27 @@ def get_note(id: int, db: Session = Depends(get_db)):
                     }
                 }
             })
-def get_all_notes(
+def get_notes_list(
         db: Session = Depends(get_db),
-        owner: Optional[str] = None,
-        search: Optional[str] = None,
-        date_from: Optional[date] = None,
-        date_to: Optional[date] = None):
+        owner: Optional[str] = Query(
+            None,
+            max_length=100,
+            description="Фильтр по имени владельца"
+        ),
+        search: Optional[str] = Query(
+            None,
+            min_length=1,
+            max_length=200,
+            description="Поиск по заголовку и тексту заметки"
+        ),
+        date_from: Optional[date] = Query(
+            None,
+            description="Показать заметки, созданные после этой даты (включительно)"
+        ),
+        date_to: Optional[date] = Query(
+            None,
+            description="Показать заметки, созданные до этой даты (включительно)"
+        )):
 
     query = db.query(NoteDB)
 
