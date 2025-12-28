@@ -20,5 +20,8 @@ class NoteCreate(BaseModel):
     owner: str
     created_at: Optional[date] = None
 
-    class Config:
-        from_attributes = True
+class NoteUpdate(BaseModel):
+    title: Optional[str] = None
+    text: Optional[str] = None
+    owner: Optional[str] = None
+    created_at: Optional[date] = None
