@@ -11,7 +11,7 @@ from datetime import date
 router = APIRouter(prefix="/notes", tags=["notes"])
 
 @router.post("/new", response_model=Note)
-def create_source(data: NoteCreate, db: Session = Depends(get_db)):
+def create_note(data: NoteCreate, db: Session = Depends(get_db)):
     note = NoteDB(
         title=data.title,
         text=data.text,
@@ -66,3 +66,14 @@ def update_note(id: int, data: NoteUpdate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(note)
     return note
+
+@router.post("/delete/{id}")
+def delete_note(id: int, db: Session = Depends(get_db)):
+    note = db.query(NoteDB).where(NoteDB.id == id).first()
+
+    if not note:
+        return None
+
+    db.delete(note)
+    db.commit()
+    return True
