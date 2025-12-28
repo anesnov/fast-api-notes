@@ -51,3 +51,18 @@ def get_all_notes(
             query = query.filter(f)
 
     return query.all()
+
+@router.post("/update/{id}", response_model=Note)
+def update_note(id: int, data: NoteUpdate, db: Session = Depends(get_db)):
+    note = db.query(NoteDB).where(NoteDB.id == id).first()
+
+    if not note:
+        return None
+
+    update_data = data.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(note, field, value)
+
+    db.commit()
+    db.refresh(note)
+    return note
